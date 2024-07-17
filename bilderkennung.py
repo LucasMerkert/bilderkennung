@@ -108,6 +108,7 @@ def process_open_cv(img_name, filter_type):
         print("Applying band-pass filter")
         mask = get_inverse_band_pass_mask(img,100, 250)
     
+    # Complex flag to store amplitude + phase
     dft = cv.dft(np.float32(img),flags = cv.DFT_COMPLEX_OUTPUT)
     dft_shift = np.fft.fftshift(dft)
 
@@ -119,14 +120,14 @@ def process_open_cv(img_name, filter_type):
     # Get the magnitude spectrum of the filtered image
     filtered_magnitude_spectrum = 20 * np.log(cv.magnitude(fshift[:, :, 0], fshift[:, :, 1]) + 1)
 
-    # Inverse DFT to get the image back
+    # Inverse DFT to get the image back, use cv.magnitude to get from complex into real-value
     f_ishift = np.fft.ifftshift(fshift)
     img_back = cv.idft(f_ishift)
     img_back = cv.magnitude(img_back[:, :, 0], img_back[:, :, 1])
 
     # Normalize the filtered image for display
-    cv.normalize(img_back, img_back, 0, 255, cv.NORM_MINMAX)
-    img_back = np.uint8(img_back)
+    # cv.normalize(img_back, img_back, 0, 255, cv.NORM_MINMAX)
+    # img_back = np.uint8(img_back)
 
     # Display the results in a 2x2 grid
     plt.figure(figsize=(10, 10))
@@ -178,4 +179,4 @@ if __name__ == "__main__":
     process_open_cv("Joseph_Fourier.JPG",FilterType.HIGH)
     process_open_cv("Joseph_Fourier.JPG",FilterType.LOW)
     process_open_cv("Joseph_Fourier.JPG",FilterType.BAND)
-    process_open_cv("Joseph_Fourier.JPG",FilterType.INVERSEBAND)
+    # process_open_cv("Joseph_Fourier.JPG",FilterType.INVERSEBAND)
